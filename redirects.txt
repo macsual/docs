@@ -138,7 +138,6 @@ docs/deploying-applications/adding-steps.md -> docs/deployment-process/steps/ind
 docs/deploying-applications/projects/deployment-processes.md -> docs/deployment-process/index.md
 docs/deploying-applications/variables/index.md -> docs/deployment-process/variables/index.md
 docs/deploying-applications/variables/binding-syntax.md -> docs/deployment-process/variables/binding-syntax.md
-docs/deploying-applications/variables/certificate-variables.md -> docs/deployment-process/variables/certificate-variables.md
 docs/deploying-applications/variables/library-variable-sets.md -> docs/deployment-process/variables/library-variable-sets.md
 docs/deploying-applications/variables/output-variables.md -> docs/deployment-process/variables/output-variables.md
 docs/deploying-applications/variables/prompted-variables.md -> docs/deployment-process/variables/prompted-variables.md
@@ -238,7 +237,6 @@ docs/deploying-applications/deployment-process/coordinating-multiple-projects/pr
 docs/deploying-applications/deployment-process/steps/index.md -> docs/deployment-process/steps/index.md
 docs/deploying-applications/deployment-process/variables/index.md -> docs/deployment-process/variables/index.md
 docs/deploying-applications/deployment-process/variables/binding-syntax.md -> docs/deployment-process/variables/binding-syntax.md
-docs/deploying-applications/deployment-process/variables/certificate-variables.md -> docs/deployment-process/variables/certificate-variables.md
 docs/deploying-applications/deployment-process/variables/library-variable-sets.md -> docs/deployment-process/variables/library-variable-sets.md
 docs/deploying-applications/deployment-process/variables/output-variables.md -> docs/deployment-process/variables/output-variables.md
 docs/deploying-applications/deployment-process/variables/prompted-variables.md -> docs/deployment-process/variables/prompted-variables.md
@@ -415,3 +413,17 @@ docs/infrastructure/environments/machine-policies.md -> docs/infrastructure/mach
 docs/administration/octopus-dsc/tentacle-agent.md -> docs/infrastructure/windows-targets/automating-tentacle-installation.md
 docs/administration/octopus-dsc/octopus-server.md -> docs/installation/automating-installation.md
 docs/installation/upgrading.md -> docs/administration/upgrading/index.md
+docs/deploying-applications/azure-deployments/index.md#DeployingtoAzure-DeployingtoAzureviaafirewall -> docs/deploying-applications/azure-deployments/deploying-to-azure-via-a-firewall/index.md
+docs/deploying-applications/deploying-to-service-fabric/index.md -> docs/deploying-applications/azure-deployments/deploying-to-service-fabric/index.md
+docs/deploying-applications/deploying-to-service-fabric/connecting-securely-with-azure-active-directory/index.md -> docs/deploying-applications/azure-deployments/deploying-to-service-fabric/connecting-securely-with-azure-active-directory/index.md
+docs/deploying-applications/deploying-to-azure/index.md -> docs/deploying-applications/azure-deployments/index.md
+docs/deploying-applications/deploying-to-azure/deploying-a-package-to-an-azure-cloud-service/index.md -> docs/deploying-applications/azure-deployments/deploying-a-package-to-an-azure-cloud-service/index.md
+docs/deploying-applications/deploying-to-azure/deploying-a-package-to-an-azure-cloud-service/azure-steps-migrated-from-octopus-deploy-2.md -> docs/deploying-applications/azure-deployments/deploying-a-package-to-an-azure-cloud-service/azure-steps-migrated-from-octopus-deploy-2.md
+docs/deploying-applications/deploying-to-azure/deploying-a-package-to-an-azure-web-app/index.md -> docs/deploying-applications/azure-deployments/deploying-a-package-to-an-azure-web-app/index.md
+docs/deploying-applications/deploying-to-azure/deploying-a-package-to-an-azure-web-app/deploying-web-jobs.md -> docs/deploying-applications/azure-deployments/deploying-a-package-to-an-azure-web-app/deploying-web-jobs.md
+docs/deploying-applications/deploying-to-azure/deploying-a-package-to-an-azure-web-app/using-deployment-slots-with-azure-web-apps.md -> docs/deploying-applications/azure-deployments/deploying-a-package-to-an-azure-web-app/using-deployment-slots-with-azure-web-apps.md
+docs/deploying-applications/deploying-to-service-fabric/connecting-securely-with-client-certificates/index.md -> docs/deploying-applications/azure-deployments/deploying-to-service-fabric/connecting-securely-with-client-certificates/index.md
+docs/deploying-applications/deploying-to-service-fabric/deploying-a-package-to-a-service-fabric-cluster/index.md -> docs/deploying-applications/azure-deployments/deploying-to-service-fabric/deploying-a-package-to-a-service-fabric-cluster/index.md
+docs/deploying-applications/service-fabric/index.md -> docs/deploying-applications/azure-deployments/service-fabric/index.md
+docs/deploying-applications/service-fabric/packaging.md -> docs/deploying-applications/azure-deployments/service-fabric/packaging.md
+docs/deploying-applications/service-fabric/version-automation-with-service-fabric-application-packages/index.md -> docs/deploying-applications/azure-deployments/service-fabric/version-automation-with-service-fabric-application-packages/index.md
