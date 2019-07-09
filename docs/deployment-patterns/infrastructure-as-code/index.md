@@ -26,26 +26,31 @@ How you leverage IaC depends on where you host your code.  If you are hosting yo
 
 ## Core Concepts and Recommendations
 
-Before jumping into configuration and other changes you will need to make to Octopus Deploy, take a step back and answer this key question.  Why do you want to leverage IaC?  Do you want to be able to auto scale production to handle additional traffic?  Do you want to deploy the latest code to a DR site in the event your primary data center goes offline?  Do you want to provide each of your developers with a testing sandbox?  When should a tear down event occur on the infrastructure?  Who should be the one who triggers it?  
+Before jumping into configuration and other changes you will need to make to Octopus Deploy, take a step back and answer this key question.  Why do you want to leverage IaC?  Do you want to be able to auto scale production to handle additional traffic?  Do you want to deploy the latest code to a DR site in the event your primary data center goes offline?  Do you want to provide each of your developers with a testing sandbox?  When should a tear down event occur on the infrastructure?  Who should be the one who triggers it? 
 
-### Deployment Process
+### Long Living Resources
 
-Octopus Deploy has built in steps to deploy Azure Resource Manager (ARM) templates, Cloud Formation Templates - for AWS, and TerraForm templates - which can deploy to both Azure and AWS.  If we don't provide the native steps, you can easily script them out using PowerShell or Bash, or you can check out our [community library](https://library.octopus.com) to see if someone from the community has written something.  
+In most IaC demos the entire infrastructure, from the SQL Server, to the network, to the Web Server get created on the fly.  In the real-world having your entire infrastructure spun up and torn down is not feasible.  For example, if you were using a cloud provider such as Azure or AWS you might have a virtual network configured with a point to point VPN.  A point to point VPN allows an additional layer of security, you could configure all your testing servers to have no public IP addresses, but you could still access them.  In our experience, tearing down a VPN connection like that is risky (dropping the VPN means you cannot connect to those test VMs anymore), and error prone.  Firewalls have to be configured just so.  
 
-Regardless of your scenario your deployment process will typically contain the following steps when spinning up new infrastructure:
+In addition, it is very unlikely you will want to spin up and down database servers on the fly.  Especially when it is in a production environment.  We have seen several companies who eventually get to this, but it is not something did day one.  
 
-1. Create new infrastructure resources.
-2. Register new deployment targets with Octopus Deploy.
-3. Deploy to new deployment targets.
+The point is, you will have long living resources.  We recommend identifying those resources and isolating them from your IaC when possible.  For example in Azure you can have virtual networks in one resource group and create a separate resource group as part of your IaC deployments.  When you want to delete all the IaC resources, you delete the IaC resource group you created as part of your deployment.
 
-If your scenarios need to tear down the infrastructure when it is no longer needed then you need to do the following:
+### Databases
 
-1. De-register the deployment targets with Octopus Deploy
-2. Destroy or teardown any new infrastructure resources
+Databases were mentioned in the earlier section, but we wanted to address them again.  When working through your scenarios consider where that data is coming from.  If you are building testing sandboxes for feature branches, how will the database be populated?  Backup and restore?  Using a third-party tool such as SQL Clone?  Seed scripts?  What about using IaC for disaster recovery?  Will you configure high availability in SQL Server and use a virtual IP address?  We can't answer those questions for you as we don't know your configuration and requirements.  We wanted to bring them up now so you can think about them now rather than running into them later.  
 
-If you did this all in a single project your deployment process would look something like this:
+### Bootstrap VMs
 
-![](spin-up-teardown-deploymentprocess.png)
+If you opt to leverage VMs instead of PaaS services such as Azure Web Apps or Kubernetes clusters, then you should automate the install of the tentacle as well as any additional applications and services using a bootstrap script.  Please take a look at our other documentation on how to [automate the tentacle installation](https://octopus.com/docs/infrastructure/deployment-targets/windows-targets/automating-tentacle-installation).  
+
+When using Windows VMs, we recommend leveraging [Chocolatey](https://chocolatey.org/).  .NET has NuGet packages, Chocolatey is NuGet packages, but for Windows, not .NET.  We also recommend leveraging [Deployment Imaging Servicing and Management](https://docs.microsoft.com/en-us/windows-hardware/manufacture/desktop/dism---deployment-image-servicing-and-management-technical-reference-for-windows), otherwise known as DISM for Windows.  With Chocolatey and DISM, you should be able to configure Windows automatically to your liking.
+
+Your Linux Distro of choice should already have a package manager built in.  You will need to refer to the documentation on your Linux Distro to get those specific commands.  If you wish to use a tentacle on Linux, please refer to our documentation on how to [bootstrap the Linux tentacle](https://octopus.com/docs/infrastructure/deployment-targets/linux/tentacle).
+
+## Configuring Octopus Deploy to leverage Infrastructure as Code
+
+The previous section addressed some core concepts as well as some recommendations to consider when you are getting started with IaC.  In this section we want to discuss some configuration changes you will need to make to Octopus Deploy to support Infrastructure as Code.
 
 ### Environments and Lifecycles
 
@@ -63,18 +68,6 @@ When you introduce IaC into your process you will also have to deal with failure
 Finally, you will want to configure your Octopus to support dynamic infrastructure for each of your environments.  This is accomplished by going to Infrastructure -> Environments and then clicking on the `...` and selecting Edit.  
 
 ![](dynamic-environments.png)
-
-### Long Living Resources
-
-In most IaC demos the entire infrastructure, from the SQL Server, to the network, to the Web Server get created on the fly.  In the real-world having your entire infrastructure spun up and torn down is not feasible.  For example, if you were using a cloud provider such as Azure or AWS you might have a virtual network configured with a point to point VPN.  A point to point VPN allows an additional layer of security, you could configure all your testing servers to have no public IP addresses.  In our experience, tearing down a VPN connection like that is risky (dropping the VPN means you cannot connect to those test VMs anymore), and error prone.  Firewalls have to be configured just so.  
-
-In addition, it is very unlikely you will want to spin up and down database servers on the fly.  Especially when it is in a production environment.  Or, when you are hosting database servers on VMs.  
-
-The point is, you will have long living resources.  We recommend identifying those resources and isolating them from your IaC when possible.  For example in Azure you can have virtual networks in one resource group and create a separate resource group as part of your IaC deployments.  When you want to delete all the IaC resources, you delete the IaC resource group you created as part of your deployment.
-
-### Databases
-
-Databases were mentioned in the earlier section, but we wanted to address them again.  When working through your scenarios consider where that data is coming from.  If you are building testing sandboxes for feature branches, how will the database be populated?  Backup and restore?  Using a third-party tool such as SQL Clone?  Seed scripts?  What about using IaC for disaster recovery?  Will you configure high availability in SQL Server and use a virtual IP address?  We can't answer those questions for you as we don't know your configuration and requirements.  We wanted to bring them up now so you can think about them now rather than running into them later.  
 
 ### Naming Conventions
 
@@ -97,10 +90,49 @@ That variable is define in the projects.
 
 Our recommendation is to create library variable set or sets to store your naming convention.  In your project have a standard variable or variables, such as `Project.Application.Name,` defined which can be referenced by the library variable set.
 
-### Bootstrap VMs
+### Deployment Process
 
-If you opt to leverage VMs instead of PaaS services such as Azure Web Apps or Kubernetes clusters, then you should automate the install of the tentacle as well as any additional applications and services using a bootstrap script.  Please take a look at our other documentation on how to [automate the tentacle installation](https://octopus.com/docs/infrastructure/deployment-targets/windows-targets/automating-tentacle-installation).  
+We've talked about environments, lifecycles and naming conventions.  Now we can move onto projects.  Regardless of your scenario, your IaC process will typically contain the following steps when spinning up new infrastructure:
 
-When using Windows VMs, we recommend leveraging [Chocolatey](https://chocolatey.org/).  .NET has NuGet packages, Chocolatey is NuGet packages, but for Windows, not .NET.  We also recommend leveraging [Deployment Imaging Servicing and Management](https://docs.microsoft.com/en-us/windows-hardware/manufacture/desktop/dism---deployment-image-servicing-and-management-technical-reference-for-windows), otherwise known as DISM for Windows.  With Chocolatey and DISM, you should be able to configure Windows automatically to your liking.
+1. Create new infrastructure resources.
+2. Register new deployment targets with Octopus Deploy.
+3. Deploy to new deployment targets.
 
-Your Linux Distro of choice should already have a package manager built in.  You will need to refer to the documentation on your Linux Distro to get those specific commands.  If you wish to use a tentacle on Linux, please refer to our documentation on how to [bootstrap the Linux tentacle](https://octopus.com/docs/infrastructure/deployment-targets/linux/tentacle).
+If your scenarios need to tear down the infrastructure when it is no longer needed then you need to do the following:
+
+1. De-register the deployment targets with Octopus Deploy
+2. Destroy or teardown any new infrastructure resources
+
+If you did this all in a single project your deployment process would look something like this:
+
+![](spin-up-teardown-deploymentprocess.png)
+
+Depending on your scenario, it is entirely possible for those steps to occur outside of Octopus Deploy.  If you were leveraging [Virtual Machine Scale Sets](https://docs.microsoft.com/en-us/azure/virtual-machine-scale-sets/overview) in Azure or [Auto Scaling Groups](https://docs.aws.amazon.com/autoscaling/ec2/userguide/AutoScalingGroup.html) in AWS, the cloud providers would spin up and down your infrastructure.  You would need to configure the bootstrap script to register the new machines and an Azure Function or AWS Lambda function to call the Octopus API to de-register the machines when they were being deleted.
+
+In other scenarios, it makes sense to leverage Octopus Deploy with IaC.  Octopus Deploy has built in steps to deploy Azure Resource Manager (ARM) templates, Cloud Formation Templates - for AWS, and TerraForm templates - which can deploy to both Azure and AWS.  If we don't provide the native steps, you can easily script them out using PowerShell or Bash, or you can check out our [community library](https://library.octopus.com) to see if someone from the community has written something.  
+
+### Deployment Target Triggers
+
+The final piece of the puzzle will be getting the latest and greatest code deployed to the new deployment targets after they are created.  This is accomplished by [deployment target triggers](https://octopus.com/docs/deployment-process/project-triggers/automatic-deployment-triggers) in Octopus Deploy.  For example, with this trigger it will deploy the latest release in production when a web server is found with the role `Trident-Web.`
+
+![](deployment-target-triggers.png)
+
+In the above screenshot, the trigger is only worried about web servers.  However, the deployment process has manual interventions and a database deployment.  When that trigger runs, steps 1, 2, and 3 should be skipped.  The deployment was already approved when it first went out.  It doesn't make sense to redeploy the database changes as they have already gone out as well.  
+
+![](sample-application-deployment-process.png)
+
+We have introduced a new system variable in Octopus Deploy called `Octopus.Deployment.Trigger.Name.`  That variable contains the name of the trigger (if the deployment was started by a trigger).  Using Octopus Deploy's run conditions we can prevent steps 1, 2, and 3 from running when the deployment was started by a trigger.  
+
+![](deployment-trigger-run-condition.png)
+
+It is a bit of a double negative.  How to read that is, when a deployment is started by a person or a service account, run this step.  When it is triggered by a trigger, skip this step.
+
+### Deployments with no targets
+
+It is very common for targets to be created as part of a deployment.  By default, Octopus Deploy will not allow that.  When Octopus Deploy was originally created it was written with the assumption the servers would always be there.  If the servers were not there, then throw an error because something bad has happened.  Some of our customers still expect that behavior, we didn't want to break them.  We introduced the project setting to allow releases to be deployed if no targets were present.  If your scenario has Octopus Deploy creating the deployment targets as part of the deployment, then you will need to enable this setting.  
+
+![](deployments-with-no-targets-setting.png)
+
+## Scenarios
+
+Using these core concepts and configurations we have put together some guides on common scenarios we have encountered.  Either through helping customers or with our own Octopus Deploy set ups.  We don't expect to cover every last scenario possible.  But we do expect this list to grow as time goes on and we add new functionality.
