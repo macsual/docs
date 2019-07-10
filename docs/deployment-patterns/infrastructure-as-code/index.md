@@ -32,7 +32,7 @@ Before jumping into configuration and other changes, you will need to make to Oc
 
 In most IaC demos the entire infrastructure, from the SQL Server to the network, to the Web Server get created on the fly.  In the real world, having your entire infrastructure spun up and torn down is not feasible.  For example, if you were using a cloud provider such as Azure or AWS, you might have a virtual network configured with a point to point VPN.  A point to point VPN allows you to configure all your testing servers to have no public IP addresses, but you could still access them.  In our experience, tearing down a VPN connection like that is risky (dropping the VPN means you cannot connect to those test VMs anymore), and error-prone.  Firewalls have to be configured just so.  
 
-Besides, it is unlikely you will want to spin up and down database servers on the fly, especially when it is in a production environment.  We have seen several companies who eventually get to this, but it is not something did day one.  
+Besides, it is unlikely you will want to spin up and down database servers on the fly, especially when it is in a production environment.  We have seen several companies who eventually get to this, but it is not something they did day one.  
 
 The point is, you will have long living resources.  We recommend identifying those resources and isolating them from your IaC when possible.  For example, in Azure, you can have virtual networks in one resource group and create a separate resource group as part of your IaC deployments.  When you want to delete all the IaC resources, you delete the IaC resource group you created as part of your deployment.
 
@@ -54,7 +54,7 @@ The previous section addressed some core concepts as well as some recommendation
 
 ### Environments and Lifecycles
 
-Your scenario will influence your environment and lifecycle configuration.  Especially f you are going to be running your IaC process through Octopus Deploy.  We recommend running your IaC process through Octopus Deploy.  However, you might be leveraging technology such as auto-scaling groups or virtual machine scale sets.  In that case, it doesn't make sense to go through Octopus Deploy.  
+Your scenario will influence your environment and lifecycle configuration.  Especially if you are going to be running your IaC process through Octopus Deploy.  We recommend running your IaC process through Octopus Deploy.  However, you might be leveraging technology such as auto-scaling groups or virtual machine scale sets.  In that case, it doesn't make sense to go through Octopus Deploy.  
 
 If you are running your IaC process through Octopus Deploy, we recommend creating a `TearDown` environment.  In your IaC process, you will deploy to that environment to de-register any deployment targets from Octopus Deploy and to delete the resources.  Creating that environment will require you it to your lifecycles.  For example, if you wanted to scale out production, your lifecycle for that would be:
 
