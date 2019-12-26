@@ -180,9 +180,9 @@ Where [<options>] is any of:
                                integration is enabled.
       --AzureDevOpsBaseUrl=VALUE
                              Set the base url for the Azure DevOps
-                               organization or collection.
+                               organization or collection or project.
       --AzureDevOpsPersonalAccessToken=VALUE
-                             A Personal Access Token authorized to read
+                             A Personal Access Token (PAT) authorized to read
                                scopes 'Build' and 'Work items', added under
                                User Settings.
       --GitHubIsEnabled=VALUE
