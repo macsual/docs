@@ -23,6 +23,10 @@ Where [<options>] is any of:
                                instance command instead. Unique Server Node
                                name for a clustered environment.
       --cachePackages=VALUE  Days to cache packages for. Default: 20
+      --cacheLowDiskSpaceThreshold=VALUE
+                             Threshold of free disk space (in gigabytes)
+                               where packages are cleaned up from cache
+                               regardless of age. Default: 1
       --maxConcurrentTasks=VALUE
                              Deprecated: may be removed in a future release
                                (currently has no effect; set Task Cap instead).
@@ -180,9 +184,9 @@ Where [<options>] is any of:
                                integration is enabled.
       --AzureDevOpsBaseUrl=VALUE
                              Set the base url for the Azure DevOps
-                               organization or collection.
+                               organization or collection or project.
       --AzureDevOpsPersonalAccessToken=VALUE
-                             A Personal Access Token authorized to read
+                             A Personal Access Token (PAT) authorized to read
                                scopes 'Build' and 'Work items', added under
                                User Settings.
       --GitHubIsEnabled=VALUE
